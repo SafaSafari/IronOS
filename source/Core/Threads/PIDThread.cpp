@@ -227,7 +227,7 @@ int32_t getPIDResultX10Watts(TemperatureType_t set_point, TemperatureType_t curr
 #ifdef TIP_CONTROL_PID
   static PID<TemperatureType_t, TIP_PID_KP, TIP_PID_KI, TIP_PID_KD, TIP_PID_INTEGRAL_LIMIT_SCALE> pid = {0, 0};
 #ifdef TIP_PID_LOW_TEMP_C
-  // Lower gains below TIP_PID_LOW_TEMP_C, for tips that oscillate at low temperatures with the full gains
+  // Lower gains below TIP_PID_LOW_TEMP_C (and above TIP_PID_HIGH_TEMP_C if defined), for tips that oscillate there with the full gains
   static PID<TemperatureType_t, TIP_PID_LOW_KP, TIP_PID_LOW_KI, TIP_PID_KD, TIP_PID_INTEGRAL_LIMIT_SCALE> pidLow = {0, 0};
 #endif
 
@@ -263,7 +263,13 @@ int32_t getPIDResultX10Watts(TemperatureType_t set_point, TemperatureType_t curr
 #ifdef TIP_CONTROL_PID
 #ifdef TIP_PID_LOW_TEMP_C
   // Only one controller is in use; clear the integral of the other so it starts at zero after a switch
-  if (set_point < TIP_PID_LOW_TEMP_C) {
+#ifdef TIP_PID_HIGH_TEMP_C
+  // Low gains also above TIP_PID_HIGH_TEMP_C, for tips that oscillate at the top of their range
+  const bool useLowGains = set_point < TIP_PID_LOW_TEMP_C || set_point > TIP_PID_HIGH_TEMP_C;
+#else
+  const bool useLowGains = set_point < TIP_PID_LOW_TEMP_C;
+#endif
+  if (useLowGains) {
     pid.integration_running_sum = 0;
     return pidLow.update(set_point, current_reading, interval, getX10WattageLimits());
   }

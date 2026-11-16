@@ -160,6 +160,7 @@
 #define TIP_PID_INTEGRAL_LIMIT_SCALE 100 // The integral can supply full power, as in the stock firmware
 #define TIP_PID_INTEGRAL_RESET_C     50  // Clear the integral when the error is more than 50 C, as in the stock firmware
 #define TIP_PID_LOW_TEMP_C           300 // Below this set point, use the stock low gains (Kp 17, Ki 0.9); full gains oscillate here
+#define TIP_PID_HIGH_TEMP_C          394 // Above this set point, the stock firmware (V0.2+) also uses the low gains: full gains oscillate near 420 C
 #define TIP_PID_LOW_KP               4
 #define TIP_PID_LOW_KI               192
 #define TIP_RESISTANCE               62 // x10 ohms, the iron is rated 65 W at 20 V
